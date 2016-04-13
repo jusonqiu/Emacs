@@ -106,6 +106,8 @@
 
 (define-key yas-keymap (kbd "C-e") 'yas/goto-end-of-active-field)
 (define-key yas-keymap (kbd "C-a") 'yas/goto-start-of-active-field)
+;; @start author juson
+;; @end
 ;; (define-key yas-minor-mode-map [(tab)] nil)
 ;; (define-key yas-minor-mode-map (kbd "TAB") nil)
 ;; (define-key yas-minor-mode-map (kbd "C-<tab>") 'yas-expand)

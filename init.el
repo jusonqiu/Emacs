@@ -55,6 +55,7 @@
 (setq helm-gtags-prefix-key "\C-cg")
 
 (add-to-list 'load-path "~/.emacs.d/custom")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/custom/theme/")
 
 (require 'setup-helm)
 (require 'setup-helm-gtags)
@@ -102,6 +103,18 @@
  )
 
 (global-set-key (kbd "RET") 'newline-and-indent)  ; automatically indent when press RET
+
+;; newline-without-break-of-line
+(defun newline-without-break-of-line ()
+  "1. move to end of the line.
+  2. insert newline with index"
+
+  (interactive)
+  (let ((oldpos (point)))
+    (end-of-line)
+    (newline-and-indent)))
+
+(global-set-key (kbd "C-RET") 'newline-without-break-of-line)
 
 ;; activate whitespace-mode to view all whitespace characters
 (global-set-key (kbd "C-c w") 'whitespace-mode)
@@ -175,7 +188,7 @@
 (defun cpp-highlight-if-0/1 ()
   "Modify the face of text in between #if 0 ... #endif."
   (interactive)
-  (setq cpp-known-face '(background-color . "dim gray"))
+  (setq cpp-known-face '(foreground-color . "dim gray"))
   (setq cpp-unknown-face 'default)
   (setq cpp-face-type 'dark)
   (setq cpp-known-writable 't)
@@ -184,11 +197,11 @@
         '((#("1" 0 1
              (fontified nil))
            nil
-           (background-color . "dim gray")
+           (foreground-color . "dim gray")
            both nil)
           (#("0" 0 1
              (fontified nil))
-           (background-color . "dim gray")
+           (foreground-color . "dim gray")
            nil
            both nil)))
   (cpp-highlight-buffer t))
@@ -212,31 +225,76 @@
 (require 'neotree)
 (global-set-key [f8] 'neotree-toggle)
 
+(global-auto-revert-mode t)
+
 
 ;; Package zygospore
 (global-set-key (kbd "C-x 1") 'zygospore-toggle-delete-other-windows)
 
+;; auto-insert-mode
+(auto-insert)
+(auto-insert-mode)
+(eval-after-load 'autoinsert
+  '(define-auto-insert '("\\.\\(c\\|h\\|cpp\\)\\'" . "C skeleton")
+     '(
+       "Short Description: "
+       "/**\n"
+       " *\n"
+       " * @File:   "
+       (file-name-nondirectory (buffer-file-name)) "\n"
+       " * @Date:   "
+       (format-time-string "%A, %e %B %Y") "\n"
+       " * @Author: Zhaosheng Qiu <JusonQiu@gmail.com>\n"
+       " *\n"
+       " **/\n"
+       )
+     )
+  )
+
+(defun android-dir-locals ()
+  (interactive)
+  (insert
+   "(
+ (nil . (
+         (company-clang-arguments . (
+                                     \"-I/home/juson/Applications/Ndk/platforms/android-15/arch-arm/usr/include/\"
+                                     \"-I/home/juson/Applications/Ndk/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/include/\"
+                                     )
+                                  )
+         )
+      )
+ )
+"
+   )
+  );; end android...
+
+(add-hook 'c-mode-common-hook
+          (lambda()
+            (local-set-key  (kbd "C-c o") 'ff-find-other-file)))
+
+;; parse main function of clang
+(defun parse-c-main ()
+  (interactive)
+  (insert
+   "#include <stdio.h>\n"
+   "#include <stdlib.h>\n"
+   "int main(int argc, char* argv[]){\n"
+   "\n    return 0;\n"
+   "}\n")
+  )
+
+(global-hl-line-mode)
+(global-linum-mode)
+(setq-default cursor-type 'bar) ;'bar 'box
+
+
+
+;;(global-set-key
+;; load-theme
+
+
+;; (global-set-key (kbd "C-x 9") '(insert-file-contents "/home/juson/.emacs.d/cmain.tpl"))
+
 ;; --------------------- add system include path -----------------
 
 ;;----------------------------end config--------------------------
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(custom-enabled-themes (quote (material)))
- '(custom-safe-themes
-   (quote
-    ("870a63a25a2756074e53e5ee28f3f890332ddc21f9e87d583c5387285e882099" default)))
- '(safe-local-variable-values
-   (quote
-    ((company-clang-arguments "-I/home/juson/Applications/Ndk/platforms/android-15/arch-arm/usr/include/" "-I/home/juson/AndroidStudioProjects/SSLClientDemo/sslnet/src/main/jni/lib/android/include/")
-     (company-clang-arguments "-I/home/juson/Applications/Ndk/platforms/android-15/arch-arm/usr/include/" "-I/home/juson/AndroidStudioProjects/SSLClientDemo/sslnet/src/main/jni/include/"))))
- '(scroll-bar-mode nil)
- '(tool-bar-mode nil))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
